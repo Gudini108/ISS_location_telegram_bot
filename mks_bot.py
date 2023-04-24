@@ -63,33 +63,32 @@ def get_ISS_coordinates(api_response):
     return ISS_latitude, ISS_longitude
 
 
-def get_location(ISS_latitude, ISS_longitude):
+def get_location(ISS_latitude, ISS_longitude, user_language):
     """Get country and city with ISS coordinates."""
-    location = geolocator.reverse(ISS_latitude+","+ISS_longitude)
+    location = geolocator.reverse(
+        ISS_latitude+","+ISS_longitude,
+        language=user_language if user_language else 'en'
+    )
     if location:
-        address = location.raw['address']
-        city = address.get('city', '')
-        country = address.get('country', '')
-    else:
-        city = 'Рльех'
-        country = 'Фхтагн'
-
-    return city, country
+        return location.address
+    return 'Ph’nglui mglw’nafh Cthulhu R’lyeh wgah’nagl fhtagn'
 
 
 def main(update, context):
     """Bot logic."""
     chat = update.effective_chat
+    user = update.effective_user
+    lang_code = user['language_code']
 
     try:
         response = get_api_response()
         ltd, lng = get_ISS_coordinates(response)
-        city, country = get_location(ltd, lng)
+        address = get_location(ltd, lng, lang_code)
 
         message = (
             f"Right now ISS's coordinates are\n"
             f"{ltd}° N and {lng}° E. \n"
-            f"It is near {city}, {country}."
+            f'{address}'
         )
 
         context.bot.send_message(
