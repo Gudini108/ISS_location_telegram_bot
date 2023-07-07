@@ -67,7 +67,7 @@ def get_location(ISS_latitude, ISS_longitude, user_language):
     """Get country and city with ISS coordinates."""
     location = geolocator.reverse(
         ISS_latitude+","+ISS_longitude,
-        language=user_language if user_language else 'en'
+        language=user_language
     )
     if location:
         return location.address
@@ -125,3 +125,4 @@ dispatcher.add_handler(MessageHandler(
     Filters.regex(r'^So, where is ISS right now\?$'), main))
 
 updater.start_polling()
+updater.idle()
